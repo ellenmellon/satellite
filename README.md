@@ -34,8 +34,6 @@ Of course it is still possible for a malicious actors to crawl and follow everyo
 
 [^1]: How do you ask a friend to follow? Idk, text them. Or just ask them in person. You're friends, right?
 
-See [Setup](#setup) to deploy a sample implementation using GitHub Pages.
-
 ## Identity
 
 A user's identity is their domain name.

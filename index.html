@@ -16,7 +16,11 @@
   <div id="setup-panel">
     <label for="username-input">GitHub username</label>
     <input type="text" id="username-input" placeholder="username">
-    <a id="token-link" href="#" target="_blank" style="display:none;">Generate token on GitHub</a>
+    <span id="token-hint" style="display:none;">
+      <a id="token-link" href="#" target="_blank">Generate token on GitHub</a>
+      — or use a <a href="https://github.com/settings/personal-access-tokens/new" target="_blank">fine-grained token</a>
+      scoped to just the <code id="repo-hint"></code> repo with Contents read/write.
+    </span>
 
     <label for="token-input">GitHub token</label>
     <input type="password" id="token-input" placeholder="github_pat_...">

@@ -574,19 +574,20 @@ window.doRepost = async function (postId, postAuthor) {
 
 function updateTokenLink() {
   const username = document.getElementById('username-input').value.trim();
-  const link = document.getElementById('token-link');
+  const hint = document.getElementById('token-hint');
   if (!username) {
-    link.style.display = 'none';
+    hint.style.display = 'none';
     return;
   }
   const repoName = getRepoName();
   const params = new URLSearchParams({
-    name: 'Satellite',
-    description: `Select "Only select repositories" → ${repoName}, then grant Contents read/write.`,
-    target_name: username,
+    scopes: 'public_repo',
+    description: 'Satellite',
   });
-  link.href = `https://github.com/settings/personal-access-tokens/new?${params}`;
-  link.style.display = '';
+  document.getElementById('token-link').href =
+    `https://github.com/settings/tokens/new?${params}`;
+  document.getElementById('repo-hint').textContent = repoName;
+  hint.style.display = '';
 }
 
 async function start() {

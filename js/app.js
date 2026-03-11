@@ -581,7 +581,8 @@ function updateTokenLink() {
   }
   const repoName = getRepoName();
   const params = new URLSearchParams({
-    name: 'Satellite',
+    name: 'sAT Proto',
+    description: `Choose "Only select repositories" > Select "${repoName}" > Click "Add permissions" > Choose "Contents" > Set "Access: Read and write"`,
     target_name: username,
   });
   document.getElementById('token-link').href =

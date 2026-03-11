@@ -16,13 +16,9 @@ While this sample implementation uses GitHub, the protocol is agnostic to the ho
 
 **Using a custom repo name**:
 by default, the client looks for data at `https://{domain}/satellite/`.
-If you name your repo something other than `satellite`, add a `satellite.json`
-file to the root of your main site (e.g. the `username.github.io` repo)
-pointing to the actual repo:
-
-```json
-{ "sat_repo": "my-custom-repo" }
-```
+If you already have a `satellite/` path for something else, create a symlink
+named `satproto_root` pointing to your actual data directory — the client
+checks `/satproto_root` first before falling back to `/satellite/`.
 ## sAT Protocol
 
 sAT Protocol (`s@`) is a decentralized social networking protocol based on static sites.
@@ -65,12 +61,8 @@ The discovery document simply contains the protocol version and the user's publi
 ```
 
 By convention, the client looks under `/satellite/` by default.
-If the data lives in a differently-named repo, place a `satellite.json`
-file at the domain root (e.g. in the `username.github.io` repo) containing:
-
-```json
-{ "sat_repo": "my-custom-repo" }
-```
+If that path is already taken, symlink `satproto_root` to the actual data
+directory — the client probes `/satproto_root` first.
 
 ## Encryption Model
 
@@ -109,7 +101,7 @@ When the user unfollows someone:
 ### Decryption Flow
 
 When Bob visits Alice's site:
-1. Resolve Alice's repo path (via `satellite.json` or the default `/satellite/`)
+1. Resolve Alice's data path (via `/satproto_root` symlink or the default `/satellite/`)
 2. Fetch `keys/bob.example.com.json`
 3. Decrypt the content key using Bob's private key (`crypto_box_seal_open`)
 4. Fetch `posts/index.json` to get the list of post IDs

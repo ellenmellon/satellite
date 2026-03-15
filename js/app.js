@@ -127,9 +127,10 @@ function showMain() {
 
 function selfDataEntry(repo, token, contentKey) {
   const pk = crypto.fromBase64(localStorage.getItem('satproto_public_key'));
-  const plaintext = new TextEncoder().encode(
-    JSON.stringify({ content_key: crypto.toBase64(contentKey), repo, token })
-  );
+  const initCommit = localStorage.getItem('satproto_init_commit');
+  const data = { content_key: crypto.toBase64(contentKey), repo, token };
+  if (initCommit) data.init_commit = initCommit;
+  const plaintext = new TextEncoder().encode(JSON.stringify(data));
   const sealed = crypto.sealBox(plaintext, pk);
   return github.textEntry(
     'keys/_self.json',
@@ -321,6 +322,9 @@ window.saveSetup = async function () {
     localStorage.setItem('satproto_github_repo', repo);
     localStorage.setItem('satproto_github_token', token);
 
+    const initCommit = await github.getCommitSha(token, repo);
+    localStorage.setItem('satproto_init_commit', initCommit);
+
     await bootstrap();
     showMain();
     setStatus('Ready! Write your first post or follow someone.');
@@ -357,6 +361,7 @@ window.signIn = async function () {
     localStorage.setItem('satproto_secret_key', sk);
     localStorage.setItem('satproto_public_key', crypto.toBase64(publicKey));
     localStorage.setItem('satproto_content_key', selfData.content_key);
+    if (selfData.init_commit) localStorage.setItem('satproto_init_commit', selfData.init_commit);
 
     document.getElementById('public-key-display').textContent =
       `Public key: ${crypto.toBase64(publicKey)}`;
@@ -387,11 +392,20 @@ window.reinitialize = async function () {
     return;
   setStatus('Re-initializing...');
   try {
-    localStorage.removeItem(PENDING_KEY);
-    localStorage.removeItem(PENDING_FOLLOWS_KEY);
-    await bootstrap();
-    setStatus('Site re-initialized!');
-    await refreshFeed();
+    const initCommit = localStorage.getItem('satproto_init_commit');
+    if (initCommit) {
+      const { token, repo } = getState();
+      await github.resetToCommit(token, repo, initCommit);
+    }
+
+    if ('caches' in window) {
+      const keys = await caches.keys();
+      await Promise.all(keys.map((k) => caches.delete(k)));
+    }
+
+    localStorage.clear();
+    setStatus('Site re-initialized. Reloading...');
+    window.location.reload();
   } catch (e) {
     setStatus('Re-initialize failed: ' + e);
   }
